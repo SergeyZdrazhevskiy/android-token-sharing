@@ -28,7 +28,7 @@ Here a very simplified usage pattern:
 See the sample app for the detailed usage.
 
 The big advantage of this approach is that you have full control over how you
-exactly use the API, however the drawback of this approach is that your app requires
+use the API, however the drawback of is that your app requires
 a few more permissions (`android.permission.{GET_ACCOUNTS, MANAGE_ACCOUNTS, USE_CREDENTIALS}`).
 
 If you just want to upload a file to SoundCloud consider the [Android intent
