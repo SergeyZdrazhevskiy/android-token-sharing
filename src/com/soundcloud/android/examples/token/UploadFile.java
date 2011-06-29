@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -81,17 +82,21 @@ public class UploadFile extends Activity {
 
     // Helper method to get file from a content uri
     protected static File getFromMediaUri(ContentResolver resolver, Uri uri) {
-        String[] filePathColumn = {MediaStore.MediaColumns.DATA};
-        Cursor cursor = resolver.query(uri, filePathColumn, null, null, null);
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                    String filePath = cursor.getString(columnIndex);
-                    return new File(filePath);
+        if ("file".equals(uri.getScheme())) {
+            return new File(uri.getPath());
+        } else if ("content".equals(uri.getScheme())) {
+            String[] filePathColumn = {MediaStore.MediaColumns.DATA};
+            Cursor cursor = resolver.query(uri, filePathColumn, null, null, null);
+            if (cursor != null) {
+                try {
+                    if (cursor.moveToFirst()) {
+                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                        String filePath = cursor.getString(columnIndex);
+                        return new File(filePath);
+                    }
+                } finally {
+                    cursor.close();
                 }
-            } finally {
-                cursor.close();
             }
         }
         return null;
