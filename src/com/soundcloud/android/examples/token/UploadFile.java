@@ -1,4 +1,4 @@
-package com.soundcloud.android.examples;
+package com.soundcloud.android.examples.token;
 
 import android.app.Activity;
 import android.content.ContentResolver;

@@ -1,4 +1,4 @@
-package com.soundcloud.android.examples;
+package com.soundcloud.android.examples.token;
 
 import com.soundcloud.api.ApiWrapper;
 import com.soundcloud.api.Env;

@@ -1,6 +1,6 @@
-package com.soundcloud.android.examples;
+package com.soundcloud.android.examples.token;
 
-import static com.soundcloud.android.examples.TokenSharing.TAG;
+import static com.soundcloud.android.examples.token.TokenSharing.TAG;
 
 import com.soundcloud.api.Endpoints;
 import com.soundcloud.api.Params;
