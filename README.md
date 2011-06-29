@@ -2,9 +2,12 @@
 
 This is a small sample app to demonstrate how you could integrate SoundCloud in your
 own Android application. The official SoundCloud app for Android app needs to
-be installed, if it is missing the user will be prompted to install it.
+be installed, if it is missing the user will be asked to install it.
 
-## How sharing works
+The demo app lets the user pick a piece of audio (using Android intents) which
+then gets uploaded to SoundCloud (as a private track).
+
+## How token sharing works
 
 The integration uses the [Android account manager][] to obtain a token and then
 makes requests using the standard SoundCloud [Java API wrapper][].

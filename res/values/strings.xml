@@ -8,4 +8,6 @@
     <string name="could_not_get_token">Could not get token</string>
     <string name="getting_details">Getting user details</string>
     <string name="could_not_create_account">Could not create account</string>
+    <string name="uploading">Uploading...</string>
+    <string name="canceled">Canceled upload</string>
 </resources>

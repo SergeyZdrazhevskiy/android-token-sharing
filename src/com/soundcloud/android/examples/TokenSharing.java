@@ -1,13 +1,8 @@
 package com.soundcloud.android.examples;
 
 import com.soundcloud.api.ApiWrapper;
-import com.soundcloud.api.Endpoints;
 import com.soundcloud.api.Env;
-import com.soundcloud.api.Http;
-import com.soundcloud.api.Request;
 import com.soundcloud.api.Token;
-import org.apache.http.HttpResponse;
-import org.json.JSONObject;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -22,13 +17,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
 
+
+/**
+ * This is the main activity which gets launched first.
+ *
+ * It first checks if SoundCloud is installed on the device - if it is it will try
+ * to obtain an OAuth2 account token. If this fails (most likely because the user has not logged in using
+ * the app) it will prompt the user to log in, launching the SoundCloud start screen.
+ *
+ * Once a token is obtained the {@link UploadFile} activity takes over.
+ *
+ * If the SoundCloud app is not installed a dialog box opens, asking the user if she wants to install
+ * the application.
+ */
 public class TokenSharing extends Activity {
     public static final String TAG = "soundcloud-token-sharing-example";
     public static final String SC_ACCOUNT_TYPE = "com.soundcloud.android.account";
@@ -38,13 +44,10 @@ public class TokenSharing extends Activity {
     private static final int DIALOG_NOT_INSTALLED = 0;
 
     private AccountManager mAccountManager;
-    private TextView mText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.token_sharing);
-        mText = (TextView) findViewById(R.id.text);
         mAccountManager = AccountManager.get(this);
 
         final Account account = getAccount();
@@ -62,14 +65,14 @@ public class TokenSharing extends Activity {
             if (token != null) {
                 success(token);
             } else {
-                notifyUser(R.string.could_not_get_token, false);
+                notifyUser(R.string.could_not_get_token);
             }
         }
     };
 
     // request a new SoundCloud account to be added
     private void addAccount() {
-        notifyUser(R.string.no_active_sc_account, true);
+        notifyUser(R.string.no_active_sc_account);
         mAccountManager.addAccount(SC_ACCOUNT_TYPE, ACCESS_TOKEN, null, null, this,
                 new AccountManagerCallback<Bundle>() {
                     @Override
@@ -84,10 +87,10 @@ public class TokenSharing extends Activity {
                             if (account != null) {
                                 new Thread(mGetToken).start();
                             } else {
-                                notifyUser(R.string.could_not_create_account, false);
+                                notifyUser(R.string.could_not_create_account);
                             }
                         } catch (OperationCanceledException e) {
-                            notifyUser(R.string.operation_canceled, false);
+                            notifyUser(R.string.operation_canceled);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         } catch (AuthenticatorException e) {
@@ -105,32 +108,11 @@ public class TokenSharing extends Activity {
 
 
     private void success(Token token) {
-        notifyUser(R.string.getting_details, false);
+        // create the API wrapper with the token
+        Api.wrapper = new ApiWrapper(null, null, null, token, Env.LIVE);
 
-        // create an api wrapper with the token
-        final ApiWrapper api = new ApiWrapper(null, null, null, token, Env.LIVE);
-
-        // and run a request against the API
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    // https://api.soundcloud.com/me.json
-                    HttpResponse resp = api.get(Request.to(Endpoints.MY_DETAILS));
-                    if (resp.getStatusLine().getStatusCode() == 200) {
-                        JSONObject me = Http.getJSON(resp);
-                        String fullName = me.optString("full_name");
-                        final String name = !TextUtils.isEmpty(fullName) ? fullName : me.optString("username");
-                        notifyUser("Hello, " + name, false);
-                    } else {
-                        notifyUser("invalid status code: " + resp.getStatusLine(), false);
-                    }
-                } catch (IOException e) {
-                    notifyUser("IO exception:" + e.getMessage(), false);
-                    Log.w(TAG, "error requesting details", e);
-                }
-            }
-        }.start();
+        // and launch our main activity
+        startActivity(new Intent(this, UploadFile.class));
     }
 
     private Account getAccount() {
@@ -147,7 +129,7 @@ public class TokenSharing extends Activity {
             String access = mAccountManager.blockingGetAuthToken(account, ACCESS_TOKEN, true);
             return new Token(access, null, Token.SCOPE_NON_EXPIRING);
         } catch (OperationCanceledException e) {
-            notifyUser(R.string.operation_canceled, true);
+            notifyUser(R.string.operation_canceled);
             return null;
         } catch (IOException e) {
             Log.w(TAG, "error", e);
@@ -158,16 +140,15 @@ public class TokenSharing extends Activity {
         }
     }
 
-    private void notifyUser(final int id, final boolean toast) {
-        notifyUser(getResources().getString(id), toast);
+    private void notifyUser(final int id) {
+        notifyUser(getResources().getString(id));
     }
 
-    private void notifyUser(final String text, final boolean toast) {
+    private void notifyUser(final String text) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mText.setText(text);
-                if (toast) Toast.makeText(TokenSharing.this, text, Toast.LENGTH_LONG).show();
+                Toast.makeText(TokenSharing.this, text, Toast.LENGTH_LONG).show();
             }
         });
     }
