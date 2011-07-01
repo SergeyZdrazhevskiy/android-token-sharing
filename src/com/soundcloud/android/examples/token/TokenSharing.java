@@ -126,7 +126,7 @@ public class TokenSharing extends Activity {
 
     private Token getToken(Account account) {
         try {
-            String access = mAccountManager.blockingGetAuthToken(account, ACCESS_TOKEN, true);
+            String access = mAccountManager.blockingGetAuthToken(account, ACCESS_TOKEN, false);
             return new Token(access, null, Token.SCOPE_NON_EXPIRING);
         } catch (OperationCanceledException e) {
             notifyUser(R.string.operation_canceled);
