@@ -28,6 +28,7 @@ if (acc.length > 0) {
 } else {
     // logic to add an account
 }
+```
 
 See the sample app for the detailed usage.
 
