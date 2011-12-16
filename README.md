@@ -14,19 +14,21 @@ makes requests using the standard SoundCloud [Java API wrapper][].
 
 Here a very simplified usage pattern:
 
-    AccountManager accountManager = AccountManager.get(this);
-    Account[] acc = accountManager.getAccountsByType("com.soundcloud.android.account");
-    if (acc.length > 0) {
-      // possibly ask user for permission to obtain token
-      String access = accountManager.blockingGetAuthToken(acc[0], "access_token", true);
-      Token token = new Token(access, null, Token.SCOPE_NON_EXPIRING);
-      ApiWrapper wrapper = new ApiWrapper(null, null, null, token, Env.LIVE);
+```java
+AccountManager accountManager = AccountManager.get(this);
+Account[] acc = accountManager.getAccountsByType("com.soundcloud.android.account");
+if (acc.length > 0) {
+    // possibly ask user for permission to obtain token
+    String access = accountManager.blockingGetAuthToken(acc[0], "access_token", true);
+    Token token = new Token(access, null, Token.SCOPE_NON_EXPIRING);
+    ApiWrapper wrapper = new ApiWrapper(null, null, null, token, Env.LIVE);
 
-      HttpResponse resp = wrapper.get(Request.to("/me"));
-      // do something with resp
-    } else {
-      // logic to add an account
-    }
+    HttpResponse resp = wrapper.get(Request.to("/me"));
+    // do something with resp
+} else {
+    // logic to add an account
+}
+```
 
 See the sample app for the detailed usage.
 
